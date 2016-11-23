@@ -23,6 +23,8 @@ lazy val akkaVersion = "2.4.12"
 
 lazy val akkaStreamsLib = Seq("com.typesafe.akka" %% "akka-stream" % akkaVersion)
 
+lazy val akkaStreamKafkaLib = Seq("com.typesafe.akka" %% "akka-stream-kafka" % "0.13")
+
 lazy val shapelessLib = Seq("com.chuusai" %% "shapeless" % "2.3.2")
 
 lazy val catsLib = Seq("org.typelevel" %% "cats-core" % "0.8.1")
@@ -51,5 +53,6 @@ lazy val basestationData = project.in(file("modules/basestation-data"))
 
 lazy val basestationCollector = project.in(file("modules/basestation-collector"))
   .settings(commonSettings:_*)
-  .settings(libraryDependencies ++= akkaStreamsLib ++ shapelessLib ++ catsLib ++ circeLib ++ scalaTestLib)
+  .settings(libraryDependencies ++= akkaStreamsLib ++ shapelessLib ++ catsLib ++
+                                    circeLib ++ scalaTestLib ++ akkaStreamKafkaLib)
   .dependsOn(basestationData)
