@@ -1,12 +1,12 @@
 package com.darienmt.airplaneadventures.basestation.collector
 
-import java.time.{LocalDate, LocalTime}
+import java.time.{ LocalDate, LocalTime }
 import java.time.format.DateTimeFormatter
 
 import com.darienmt.airplaneadventures.basestation.data.BaseStation.isOnGroundType
 import shapeless._
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 object FromCSVtoCaseClass {
   trait Read[A] { def reads(s: String): Try[A] }
@@ -33,7 +33,7 @@ object FromCSVtoCaseClass {
     }
 
     implicit object localDateRead extends Read[LocalDate] {
-      def reads(s: String): Try[LocalDate] = Try(LocalDate.parse(s,DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+      def reads(s: String): Try[LocalDate] = Try(LocalDate.parse(s, DateTimeFormatter.ofPattern("yyyy/MM/dd")))
     }
 
     implicit object localTimeRead extends Read[LocalTime] {
@@ -69,9 +69,8 @@ object FromCSVtoCaseClass {
 
   trait RowParser[A] {
     def apply[L <: HList](row: List[String])(implicit
-                                             gen: Generic.Aux[A, L],
-                                             fromRow: FromRow[L]
-    ): Try[A] = fromRow(row).map(gen. from)
+      gen: Generic.Aux[A, L],
+      fromRow: FromRow[L]): Try[A] = fromRow(row).map(gen.from)
   }
 
   def rowParserFor[A]: RowParser[A] = new RowParser[A] {}

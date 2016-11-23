@@ -3,10 +3,10 @@ package com.darienmt.airplaneadventures.basestation.collector
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-import io.circe.{Decoder, Encoder}
+import io.circe.{ Encoder, Decoder }
 
 object CirceEncoders {
-  import io.circe.java8.time.{encodeLocalTime, decodeLocalTime}
+  import io.circe.java8.time.{ encodeLocalTime, decodeLocalTime }
 
   implicit final val encodeLocalTimeDefault: Encoder[LocalTime] =
     encodeLocalTime(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"))

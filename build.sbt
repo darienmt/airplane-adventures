@@ -1,3 +1,4 @@
+
 name := "airplane-adventures"
 
 lazy val buildSettings = Seq(
@@ -33,11 +34,14 @@ lazy val circeLib = Seq(
   "io.circe" %% "circe-java8"
 ).map(_ % "0.6.0")
 
+lazy val scalaTestLib = Seq("org.scalatest" %% "scalatest" % "3.0.1")
+
 lazy val commonLibraries = Seq(
 )
 
 lazy val commonSettings = buildSettings ++ commonLibraries ++
-  (scalacOptions ++= compilerOptions)
+  (scalacOptions ++= compilerOptions) ++
+  (scalastyleFailOnError := true)
 
 lazy val root = project.in(file("."))
   .aggregate(basestationData, basestationCollector)
@@ -47,5 +51,5 @@ lazy val basestationData = project.in(file("modules/basestation-data"))
 
 lazy val basestationCollector = project.in(file("modules/basestation-collector"))
   .settings(commonSettings:_*)
-  .settings(libraryDependencies ++= akkaStreamsLib ++ shapelessLib ++ catsLib ++ circeLib)
+  .settings(libraryDependencies ++= akkaStreamsLib ++ shapelessLib ++ catsLib ++ circeLib ++ scalaTestLib)
   .dependsOn(basestationData)
