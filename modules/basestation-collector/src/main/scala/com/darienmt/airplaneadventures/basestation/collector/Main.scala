@@ -8,7 +8,7 @@ import com.darienmt.airplaneadventures.basestation.data.BaseStation.Message
 import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
@@ -18,7 +18,7 @@ import CirceEncoders._
 import akka.kafka.ProducerSettings
 import akka.kafka.scaladsl.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.{ByteArraySerializer, StringSerializer}
+import org.apache.kafka.common.serialization.{ ByteArraySerializer, StringSerializer }
 
 case class ErrorMessage(message: String)
 
@@ -34,19 +34,16 @@ object Main extends App {
   val kafkaPort = config.getString("kafka.port")
   val topic = config.getString("kafka.topic")
 
-
   val stringSource = BaseStationSource(bsAddress, bsPort)
     .map {
       case Success(m: Message) => m.asJson
       case Failure(ex) => ErrorMessage(ex.toString()).asJson
     }
     .map(_.noSpaces)
-    .map( m => new ProducerRecord[Array[Byte], String](topic, m))
-
+    .map(m => new ProducerRecord[Array[Byte], String](topic, m))
 
   val producerSettings = ProducerSettings(system, new ByteArraySerializer, new StringSerializer)
     .withBootstrapServers(s"$kafkaAddress:$kafkaPort")
-
 
   val end: Future[Done] = stringSource.runWith(Producer.plainSink(producerSettings))
 }

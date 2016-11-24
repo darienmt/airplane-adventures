@@ -13,14 +13,13 @@ import scala.util.Try
 
 object BaseStationSource {
 
-  def apply(address: String, port: Int)(implicit actorSystem: ActorSystem): Source[Try[Message], NotUsed] = {
-    val connectionsLines: Flow[ByteString, String, Future[OutgoingConnection]] =
-      Tcp().outgoingConnection(address, port)
-        .via(Framing.delimiter(ByteString("\n"), 256))
-        .map(_.utf8String)
-
+  def apply(address: String, port: Int)(implicit actorSystem: ActorSystem): Source[Try[Message], NotUsed] =
     Source(IndexedSeq(ByteString.empty))
-      .via(connectionsLines)
+      .via(
+        Tcp().outgoingConnection(address, port)
+          .via(Framing.delimiter(ByteString("\n"), 256))
+          .map(_.utf8String)
+      )
       .map(MessageParser(_))
-  }
+
 }
