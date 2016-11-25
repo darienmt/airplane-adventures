@@ -1,12 +1,15 @@
-package com.darienmt.airplaneadventures.basestation.collector
+package com.darienmt.airplaneadventures.basestation.collector.parsing
 
-import com.darienmt.airplaneadventures.basestation.collector.FromCSVtoCaseClass._
+import FromCSVtoCaseClass.rowParserFor
 import com.darienmt.airplaneadventures.basestation.data.BaseStation._
 
-import scala.util.{ Failure, Try }
+import scala.util.{Failure, Success, Try}
 
 object MessageParser {
-  def apply(l: String): Try[Message] = parse(l.split(",").toList)
+  def apply(l: String): Message = parse(l.split(",").toList) match {
+    case Success(m) => m
+    case Failure(ex) => ErrorMessage(l, ex.toString)
+  }
 
   protected val parse: List[String] => Try[Message] = {
     case "SEL" :: "" :: rest => rowParserFor[SelectionChangeMessage](masked(rest, List(3, 4, 5, 6, 7, 8, 9, 10, 11)))

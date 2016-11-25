@@ -1,12 +1,12 @@
-package com.darienmt.airplaneadventures.basestation.collector
+package com.darienmt.airplaneadventures.basestation.collector.parsing
 
-import java.time.{ LocalDate, LocalTime }
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalTime}
 
 import com.darienmt.airplaneadventures.basestation.data.BaseStation.isOnGroundType
 import shapeless._
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 object FromCSVtoCaseClass {
   trait Read[A] { def reads(s: String): Try[A] }
@@ -20,6 +20,10 @@ object FromCSVtoCaseClass {
 
     implicit object intRead extends Read[Int] {
       def reads(s: String): Try[Int] = Try(s.toInt)
+    }
+
+    implicit object doubleRead extends Read[Double] {
+      def reads(s: String): Try[Double] = Try(s.toDouble)
     }
 
     implicit object isOnGroundTypeRead extends Read[isOnGroundType] {

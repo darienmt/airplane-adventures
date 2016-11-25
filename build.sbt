@@ -21,7 +21,10 @@ lazy val compilerOptions = Seq(
 
 lazy val akkaVersion = "2.4.12"
 
-lazy val akkaStreamsLib = Seq("com.typesafe.akka" %% "akka-stream" % akkaVersion)
+lazy val akkaLib = Seq(
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
+)
 
 lazy val akkaStreamKafkaLib = Seq("com.typesafe.akka" %% "akka-stream-kafka" % "0.13")
 
@@ -35,6 +38,10 @@ lazy val circeLib = Seq(
   "io.circe" %% "circe-parser",
   "io.circe" %% "circe-java8"
 ).map(_ % "0.6.0")
+
+lazy val loggingLib = Seq(
+  "ch.qos.logback" % "logback-classic" % "1.1.3"
+)
 
 lazy val scalaTestLib = Seq("org.scalatest" %% "scalatest" % "3.0.1")
 
@@ -53,6 +60,8 @@ lazy val basestationData = project.in(file("modules/basestation-data"))
 
 lazy val basestationCollector = project.in(file("modules/basestation-collector"))
   .settings(commonSettings:_*)
-  .settings(libraryDependencies ++= akkaStreamsLib ++ shapelessLib ++ catsLib ++
-                                    circeLib ++ scalaTestLib ++ akkaStreamKafkaLib)
+  .settings(libraryDependencies ++= akkaLib ++ shapelessLib ++ catsLib ++
+                                    circeLib ++ scalaTestLib ++ akkaStreamKafkaLib ++
+                                    loggingLib
+  )
   .dependsOn(basestationData)

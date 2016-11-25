@@ -11,6 +11,9 @@ object BaseStation {
 
   sealed trait Message
 
+  case class ErrorMessage(original: String, error: String) extends Message
+
+  sealed trait SuccessMessage extends Message
   /**
    * SELECTION CHANGE MESSAGE :  Generated when the user changes the selected aircraft in BaseStation. (SEL)
    */
@@ -24,7 +27,7 @@ object BaseStation {
     dateMessageLogged: LocalDate,
     timeMessageLogged: LocalTime,
     callSign: String
-  ) extends Message
+  ) extends SuccessMessage
 
   /**
    *  NEW ID MESSAGE : Generated when an aircraft being tracked sets or changes its callsign. (ID)
@@ -39,7 +42,7 @@ object BaseStation {
     dateMessageLogged: LocalDate,
     timeMessageLogged: LocalTime,
     callSign: String
-  ) extends Message
+  ) extends SuccessMessage
 
   /**
    *  NEW AIRCRAFT MESSAGE : Generated when the SBS picks up a signal
@@ -54,7 +57,7 @@ object BaseStation {
     timeMessageGenerated: LocalTime,
     dateMessageLogged: LocalDate,
     timeMessageLogged: LocalTime
-  ) extends Message
+  ) extends SuccessMessage
 
   /**
    *   STATUS CHANGE MESSAGE : Generated when an aircraft's status changes according to the time-out
@@ -77,7 +80,7 @@ object BaseStation {
     dateMessageLogged: LocalDate,
     timeMessageLogged: LocalTime,
     recordStatusFlag: String
-  ) extends Message
+  ) extends SuccessMessage
 
   /**
    *  CLICK MESSAGE : Generated when the user double-clicks (or presses return) on an aircraft
@@ -89,9 +92,9 @@ object BaseStation {
     timeMessageGenerated: LocalTime,
     dateMessageLogged: LocalDate,
     timeMessageLogged: LocalTime
-  ) extends Message
+  ) extends SuccessMessage
 
-  sealed trait TransmissionMessage extends Message
+  sealed trait TransmissionMessage extends SuccessMessage
 
   type isOnGroundType = Boolean
 
@@ -125,8 +128,8 @@ object BaseStation {
     altitude: Int,
     groundSpeed: String,
     track: String,
-    latitude: String,
-    longitude: String,
+    latitude: Double,
+    longitude: Double,
     isOnGround: isOnGroundType
   ) extends Message with TransmissionMessage
 
@@ -143,8 +146,8 @@ object BaseStation {
     dateMessageLogged: LocalDate,
     timeMessageLogged: LocalTime,
     altitude: Int,
-    latitude: String,
-    longitude: String,
+    latitude: Double,
+    longitude: Double,
     squawkChanged: String,
     emergency: String,
     transponderIdent: String,
