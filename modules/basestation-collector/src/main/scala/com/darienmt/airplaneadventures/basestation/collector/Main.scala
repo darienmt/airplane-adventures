@@ -11,7 +11,6 @@ import com.typesafe.config.ConfigFactory
 object Main extends App {
   implicit val system = ActorSystem("collector")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-  implicit val executorContext = system.dispatcher
 
   val config = ConfigFactory.load()
 

@@ -53,7 +53,7 @@ lazy val commonSettings = buildSettings ++ commonLibraries ++
   (scalastyleFailOnError := true)
 
 lazy val root = project.in(file("."))
-  .aggregate(basestationData, basestationCollector)
+  .aggregate(basestationData, basestationCollector, basestationRepeater)
 
 lazy val basestationData = project.in(file("modules/basestation-data"))
   .settings(commonSettings:_*)
@@ -65,3 +65,8 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
                                     loggingLib
   )
   .dependsOn(basestationData)
+
+lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
+  .settings(commonSettings:_*)
+  .settings(libraryDependencies ++= akkaLib ++ scalaTestLib ++ loggingLib
+  )

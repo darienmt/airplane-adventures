@@ -48,5 +48,9 @@ class Collector(collectorGenerator: (SourceConfig, SinkConfig) => Future[Done]) 
       log.info(s"Stream ${source} => ${sink}, finished. Starting over.")
       startCollectingMessages(source, sink)
     }
+    case msg => {
+      log.error("Unknown message => " + msg.getClass + " ==== " + msg)
+      context.system.terminate()
+    }
   }
 }
