@@ -72,9 +72,16 @@ object FromCSVtoCaseClass {
   }
 
   trait RowParser[A] {
-    def apply[L <: HList](row: List[String])(implicit
+    def apply[L <: HList](row: List[String], indexes: List[Int])(implicit
       gen: Generic.Aux[A, L],
-      fromRow: FromRow[L]): Try[A] = fromRow(row).map(gen.from)
+      fromRow: FromRow[L]): Try[A] = {
+        val idx = indexes.map(_ - 3)
+        if (idx.forall(_ < row.size) ) {
+          fromRow(idx.map(i => row(i))).map(gen.from)
+        } else {
+          Failure(new Exception(s"Not all indexes are present. Valid indexes: ${indexes.mkString(",")}"))
+        }
+    }
   }
 
   def rowParserFor[A]: RowParser[A] = new RowParser[A] {}

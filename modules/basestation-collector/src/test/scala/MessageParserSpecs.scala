@@ -76,5 +76,10 @@ class MessageParserSpecs extends WordSpec with Matchers {
       val message = MessageParser("MSG,8,496,194,405F4E,27884,2010/02/19,17:58:13.244,2010/AA/19,17:58:13.368,,,,,,,,,,,,0")
       message shouldBe a[ErrorMessage]
     }
+
+    "if there is an error on the number of csv and the index, an error message should be generated" in {
+      val message = MessageParser("\"MSG,8,496,194,405F4E,27884,2010/02/19,17:58:13.244,2010/02/19")
+      message shouldBe a[ErrorMessage]
+    }
   }
 }

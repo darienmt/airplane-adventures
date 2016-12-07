@@ -15,7 +15,7 @@ object BaseStationSource {
     Source(IndexedSeq(ByteString.empty))
       .via(
         Tcp().outgoingConnection(address, port)
-          .via(Framing.delimiter(ByteString("\n"), 256))
+          .via(Framing.delimiter(ByteString("\n"), 256, allowTruncation = true))
           .map(_.utf8String)
       )
       .map(MessageParser(_))

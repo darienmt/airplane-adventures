@@ -2,13 +2,16 @@ package com.darienmt.airplaneadventures.basestation.collector.actors
 
 import akka.Done
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated}
-import com.darienmt.airplaneadventures.basestation.collector.actors.CollectorManager.{StartCollecting, Tick, UnknownMessage}
+import com.darienmt.airplaneadventures.basestation.collector.actors.CollectorManager._
 import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{SinkConfig, SourceConfig}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 object CollectorManager {
+
+  type CollectorProps = (ActorRef, Collector.Generator, FiniteDuration) => Props
+  type StreamGenerator = (SourceConfig, SinkConfig) => Future[Done]
 
   sealed trait CollectorManagerMessages
 
@@ -17,8 +20,8 @@ object CollectorManager {
   case object Tick extends CollectorManagerMessages
 
   def props(
-             collectorProps: (ActorRef, () => Future[Done]) => Props,
-             streamGenerator: (SourceConfig, SinkConfig) => Future[Done],
+             collectorProps: CollectorProps,
+             streamGenerator: StreamGenerator,
              maxRetries: Int,
              retryInterval: FiniteDuration
            ): Props = Props(new CollectorManager(collectorProps, streamGenerator, maxRetries, retryInterval))
@@ -26,8 +29,8 @@ object CollectorManager {
 }
 
 class CollectorManager(
-                        collectorProps: (ActorRef, () => Future[Done]) => Props,
-                        streamGenerator: (SourceConfig, SinkConfig) => Future[Done],
+                        collectorProps: CollectorProps,
+                        streamGenerator: StreamGenerator,
                         maxRetries: Int,
                         retryInterval: FiniteDuration
                       ) extends Actor with ActorLogging {
@@ -43,7 +46,7 @@ class CollectorManager(
   }
 
   def startOver(generator: () => Future[Done], retryCount: Int = 0): Unit = {
-    val collector = context.actorOf(collectorProps(self, generator))
+    val collector = context.actorOf(collectorProps(self, generator, retryInterval))
     context.watch(collector)
     context.become(waitingForCollectionToFinish(generator, collector, retryCount) orElse unknowMessage, true)
   }
@@ -57,6 +60,12 @@ class CollectorManager(
       context.unwatch(collector)
       context.stop(collector)
       startOver(generator)
+    }
+    case Collector.UnknownMessage(msg) => log.error("Unknown message received by collector => " + msg.toString)
+    case Collector.Tick => {
+      if (retryCount > 1) {
+        context.become(waitingForCollectionToFinish(generator, collector, retryCount - 1) orElse unknowMessage, true)
+      }
     }
     case Terminated(`collector`) => countTermination(generator, retryCount)
   }
