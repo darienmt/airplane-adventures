@@ -43,7 +43,7 @@ class Collector(
       manager ! StreamFinished
     }
     case Tick => {
-      schedulerHandler = Some(context.system.scheduler.scheduleOnce(heartbeatInterval, self, Tick))
+      scheduleTick()
       manager ! Tick
     }
     case msg => UnknownMessage(msg)
@@ -53,9 +53,12 @@ class Collector(
     collectorGenerator() pipeTo self
 
   override def preStart(): Unit = {
-    schedulerHandler = Some(context.system.scheduler.scheduleOnce(heartbeatInterval, self, Tick))
+    scheduleTick()
     startCollectingMessages()
   }
+
+  protected def scheduleTick(): Unit =
+    schedulerHandler = Some(context.system.scheduler.scheduleOnce(heartbeatInterval, self, Tick))
 
   override def postRestart(reason: Throwable): Unit = {}
 

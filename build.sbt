@@ -16,7 +16,6 @@ lazy val compilerOptions = Seq(
   "-unchecked",
   "-Yno-adapted-args",
   "-Ywarn-dead-code",
-  "-Ywarn-numeric-widen",
   "-Xfuture"
 )
 
