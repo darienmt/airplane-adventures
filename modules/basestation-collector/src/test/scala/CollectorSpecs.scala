@@ -1,14 +1,13 @@
 import akka.Done
-import akka.actor.Actor.Receive
 import akka.actor.Status.Failure
-import akka.actor.{ Actor, ActorRef, ActorSystem, Props, SupervisorStrategy, Terminated }
-import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKit }
+import akka.actor.{Actor, ActorRef, ActorSystem, Props, SupervisorStrategy, Terminated}
+import akka.testkit.{DefaultTimeout, ImplicitSender, TestKit}
 import com.darienmt.airplaneadventures.basestation.collector.actors.Collector
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{ StreamFinished, Tick, UnknownMessage }
-import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpecLike }
+import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{StreamFinished, UnknownMessage}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import TestUtils._
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
     with DefaultTimeout with ImplicitSender
@@ -20,14 +19,8 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
     shutdown()
   }
 
-  def generatorWithDelay(delay: Int = 10000): Collector.Generator = () => Future {
-    Thread.sleep(delay)
-    Done
-  }
-
   def getActor(
-    generator: Collector.Generator = generatorWithDelay(),
-    heartbeatInterval: FiniteDuration = 1 minutes
+    generator: Collector.Generator = generatorWithDelay()
   ): ActorRef = {
     val supervisor = system.actorOf(Props(new Actor {
       override def supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
@@ -36,7 +29,7 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
       }
     }))
 
-    supervisor ! Collector.props(testActor, generator, heartbeatInterval)
+    supervisor ! Collector.props(testActor, generator)
 
     expectMsgType[ActorRef]
   }
@@ -60,11 +53,6 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
       val actor = getActor()
       actor ! Done
       expectMsg(StreamFinished)
-    }
-
-    "send a Tick on every heartbeat" in {
-      val actor = getActor(heartbeatInterval = 1 second)
-      expectMsg(Tick)
     }
 
     "send StreamFinished, when the generator sends Done" in {

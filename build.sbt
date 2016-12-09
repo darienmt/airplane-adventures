@@ -44,7 +44,10 @@ lazy val loggingLib = Seq(
   "ch.qos.logback" % "logback-classic" % "1.1.3"
 )
 
-lazy val scalaTestLib = Seq("org.scalatest" %% "scalatest" % "3.0.1")
+lazy val testLib = Seq(
+  "org.scalatest" %% "scalatest" % "3.0.1",
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.2.2" % "test"
+)
 
 lazy val commonLibraries = Seq(
 )
@@ -62,7 +65,7 @@ lazy val basestationData = project.in(file("modules/basestation-data"))
 lazy val basestationCollector = project.in(file("modules/basestation-collector"))
   .settings(commonSettings:_*)
   .settings(libraryDependencies ++= akkaLib ++ shapelessLib ++ catsLib ++
-                                    circeLib ++ scalaTestLib ++ akkaStreamKafkaLib ++
+                                    circeLib ++ testLib ++ akkaStreamKafkaLib ++
                                     loggingLib
   )
   .aggregate(basestationData)
@@ -73,7 +76,7 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
 
 lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
   .settings(commonSettings:_*)
-  .settings(libraryDependencies ++= akkaLib ++ scalaTestLib ++ loggingLib
+  .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib
   )
 
 // Docker
