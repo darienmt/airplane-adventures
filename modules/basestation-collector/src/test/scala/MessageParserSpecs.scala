@@ -1,6 +1,6 @@
 import com.darienmt.airplaneadventures.basestation.collector.parsing.MessageParser
 import com.darienmt.airplaneadventures.basestation.data.BaseStation._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
 import scala.util.Failure
 

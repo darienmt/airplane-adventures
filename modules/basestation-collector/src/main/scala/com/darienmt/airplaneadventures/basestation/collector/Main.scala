@@ -2,10 +2,10 @@ package com.darienmt.airplaneadventures.basestation.collector
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.darienmt.airplaneadventures.basestation.collector.actors.{Collector, CollectorManager}
+import com.darienmt.airplaneadventures.basestation.collector.actors.{ Collector, CollectorManager }
 import com.darienmt.airplaneadventures.basestation.collector.actors.CollectorManager.StartCollecting
 import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka
-import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{SinkConfig, SourceConfig}
+import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{ SinkConfig, SourceConfig }
 import com.typesafe.config.ConfigFactory
 import scala.concurrent.duration._
 

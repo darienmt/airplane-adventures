@@ -1,12 +1,12 @@
 package com.darienmt.airplaneadventures.basestation.collector.parsing
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalTime}
+import java.time.{ LocalDate, LocalTime }
 
 import com.darienmt.airplaneadventures.basestation.data.BaseStation.isOnGroundType
 import shapeless._
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 object FromCSVtoCaseClass {
   trait Read[A] { def reads(s: String): Try[A] }
@@ -75,12 +75,12 @@ object FromCSVtoCaseClass {
     def apply[L <: HList](row: List[String], indexes: List[Int])(implicit
       gen: Generic.Aux[A, L],
       fromRow: FromRow[L]): Try[A] = {
-        val idx = indexes.map(_ - 3)
-        if (idx.forall(_ < row.size) ) {
-          fromRow(idx.map(i => row(i))).map(gen.from)
-        } else {
-          Failure(new Exception(s"Not all indexes are present. Valid indexes: ${indexes.mkString(",")}"))
-        }
+      val idx = indexes.map(_ - 3)
+      if (idx.forall(_ < row.size)) {
+        fromRow(idx.map(i => row(i))).map(gen.from)
+      } else {
+        Failure(new Exception(s"Not all indexes are present. Valid indexes: ${indexes.mkString(",")}"))
+      }
     }
   }
 

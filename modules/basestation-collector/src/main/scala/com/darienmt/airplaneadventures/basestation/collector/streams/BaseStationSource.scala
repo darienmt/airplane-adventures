@@ -2,7 +2,7 @@ package com.darienmt.airplaneadventures.basestation.collector.streams
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Framing, Source, Tcp}
+import akka.stream.scaladsl.{ Framing, Source, Tcp }
 import akka.util.ByteString
 import com.darienmt.airplaneadventures.basestation.collector.parsing.MessageParser
 import com.darienmt.airplaneadventures.basestation.data.BaseStation.Message

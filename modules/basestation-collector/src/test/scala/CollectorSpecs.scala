@@ -1,17 +1,18 @@
 import akka.Done
+import akka.actor.Actor.Receive
 import akka.actor.Status.Failure
-import akka.actor.{ActorRef, ActorSystem, Terminated}
-import akka.testkit.{DefaultTimeout, ImplicitSender, TestKit}
+import akka.actor.{ Actor, ActorRef, ActorSystem, Props, SupervisorStrategy, Terminated }
+import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKit }
 import com.darienmt.airplaneadventures.basestation.collector.actors.Collector
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{StreamFinished, Tick, UnknownMessage}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{ StreamFinished, Tick, UnknownMessage }
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpecLike }
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
-  with DefaultTimeout with ImplicitSender
-  with WordSpecLike with Matchers with BeforeAndAfterAll {
+    with DefaultTimeout with ImplicitSender
+    with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   import system.dispatcher
 
@@ -19,17 +20,26 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
     shutdown()
   }
 
-  def generatorWithDelay(delay: Int = 1000): Collector.Generator = () => Future {
+  def generatorWithDelay(delay: Int = 10000): Collector.Generator = () => Future {
     Thread.sleep(delay)
     Done
   }
 
   def getActor(
-                generator: Collector.Generator = generatorWithDelay(),
-                heartbeatInterval: FiniteDuration = 1 minutes
-              ): ActorRef =
-    system.actorOf(Collector.props(testActor, generator, heartbeatInterval))
+    generator: Collector.Generator = generatorWithDelay(),
+    heartbeatInterval: FiniteDuration = 1 minutes
+  ): ActorRef = {
+    val supervisor = system.actorOf(Props(new Actor {
+      override def supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
+      override def receive: Receive = {
+        case p: Props => sender ! context.actorOf(p)
+      }
+    }))
 
+    supervisor ! Collector.props(testActor, generator, heartbeatInterval)
+
+    expectMsgType[ActorRef]
+  }
 
   "the collector actor" should {
 

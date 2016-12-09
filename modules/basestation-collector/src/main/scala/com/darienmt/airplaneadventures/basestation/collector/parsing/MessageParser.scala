@@ -3,7 +3,7 @@ package com.darienmt.airplaneadventures.basestation.collector.parsing
 import FromCSVtoCaseClass.rowParserFor
 import com.darienmt.airplaneadventures.basestation.data.BaseStation._
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 object MessageParser {
   def apply(l: String): Message = parse(l.split(",").toList) match {

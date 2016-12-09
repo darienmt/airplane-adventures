@@ -18,9 +18,10 @@ object Main extends App {
 
   Tcp()
     .bind("0.0.0.0", bsPort)
-    .runForeach { _
-      .flow
-      .join(upstreamFlow)
-      .run()
+    .runForeach {
+      _
+        .flow
+        .join(upstreamFlow)
+        .run()
     }
 }

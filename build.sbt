@@ -65,9 +65,39 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
                                     circeLib ++ scalaTestLib ++ akkaStreamKafkaLib ++
                                     loggingLib
   )
+  .aggregate(basestationData)
   .dependsOn(basestationData)
+  .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
+  .settings(dockerSettings)
+
 
 lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
   .settings(commonSettings:_*)
   .settings(libraryDependencies ++= akkaLib ++ scalaTestLib ++ loggingLib
   )
+
+// Docker
+addCommandAlias("dockerize", ";clean;compile;test;basestationCollector/docker")
+
+lazy val dockerSettings = Seq(
+  dockerfile in docker := {
+    val appDir: File = stage.value
+    val targetDir = "/app"
+
+    new Dockerfile {
+      from("openjdk:alpine")
+      entryPoint(s"$targetDir/bin/${executableScriptName.value}")
+      copy(appDir, targetDir)
+    }
+  },
+  imageNames in docker := Seq(
+    // Sets the latest tag
+    ImageName(s"${name.value.toLowerCase}:latest"),
+
+    // Sets a name with a tag that contains the project version
+    ImageName(
+      repository = name.value.toLowerCase(),
+      tag = Some("v" + version.value)
+    )
+  )
+)

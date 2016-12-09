@@ -2,8 +2,8 @@ package com.darienmt.airplaneadventures.basestation.collector.actors
 
 import akka.Done
 import akka.actor.Status.Failure
-import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{Generator, StreamFinished, Tick, UnknownMessage}
+import akka.actor.{ Actor, ActorLogging, ActorRef, Cancellable, Props }
+import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{ Generator, StreamFinished, Tick, UnknownMessage }
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
@@ -17,17 +17,17 @@ object Collector {
   case object Tick extends CollectorMessage
 
   def props(
-             manager: ActorRef,
-             collectorGenerator: Generator,
-             heartbeatInterval: FiniteDuration
-           ): Props = Props(new Collector(manager, collectorGenerator, heartbeatInterval))
+    manager: ActorRef,
+    collectorGenerator: Generator,
+    heartbeatInterval: FiniteDuration
+  ): Props = Props(new Collector(manager, collectorGenerator, heartbeatInterval))
 }
 
 class Collector(
-                 manager: ActorRef,
-                 collectorGenerator: Generator,
-                 heartbeatInterval: FiniteDuration
-               ) extends Actor with ActorLogging {
+    manager: ActorRef,
+    collectorGenerator: Generator,
+    heartbeatInterval: FiniteDuration
+) extends Actor with ActorLogging {
 
   import akka.pattern.pipe
   import context.dispatcher
@@ -46,7 +46,7 @@ class Collector(
       scheduleTick()
       manager ! Tick
     }
-    case msg => UnknownMessage(msg)
+    case msg => manager ! UnknownMessage(msg)
   }
 
   def startCollectingMessages(): Unit =
