@@ -45,7 +45,6 @@ lazy val loggingLib = Seq(
 )
 
 lazy val testLib = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.1",
   "org.scalamock" %% "scalamock-scalatest-support" % "3.2.2" % "test"
 )
 

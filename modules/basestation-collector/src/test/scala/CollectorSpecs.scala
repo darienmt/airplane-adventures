@@ -1,10 +1,10 @@
 import akka.Done
 import akka.actor.Status.Failure
-import akka.actor.{Actor, ActorRef, ActorSystem, Props, SupervisorStrategy, Terminated}
-import akka.testkit.{DefaultTimeout, ImplicitSender, TestKit}
+import akka.actor.{ Actor, ActorRef, ActorSystem, Props, SupervisorStrategy, Terminated }
+import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKit }
 import com.darienmt.airplaneadventures.basestation.collector.actors.Collector
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{StreamFinished, UnknownMessage}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{ StreamFinished, UnknownMessage }
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpecLike }
 import TestUtils._
 
 import scala.concurrent.Future

@@ -1,7 +1,7 @@
 import akka.Done
 import com.darienmt.airplaneadventures.basestation.collector.actors.Collector
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 object TestUtils {
 
