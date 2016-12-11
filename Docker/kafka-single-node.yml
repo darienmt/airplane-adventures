@@ -20,6 +20,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - kafka:/kafka
+    depends_on:
+      - zookeeper
 
 volumes:
   kafka:
