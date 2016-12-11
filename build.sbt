@@ -2,7 +2,7 @@
 name := "airplane-adventures"
 
 lazy val buildSettings = Seq(
-  organization := "com.darienmt",
+  organization := "darienmt",
   scalaVersion := "2.11.8"
 )
 
@@ -76,7 +76,7 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
 lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
   .settings(commonSettings:_*)
   .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib
-  )
+  )0
 
 // Docker
 addCommandAlias("dockerize", ";clean;compile;test;basestationCollector/docker")
@@ -87,18 +87,18 @@ lazy val dockerSettings = Seq(
     val targetDir = "/app"
 
     new Dockerfile {
-      from("openjdk:alpine")
+      from("anapsix/alpine-java:8")
       entryPoint(s"$targetDir/bin/${executableScriptName.value}")
       copy(appDir, targetDir)
     }
   },
   imageNames in docker := Seq(
     // Sets the latest tag
-    ImageName(s"${name.value.toLowerCase}:latest"),
+    ImageName(s"${organization.value}/${name.value.toLowerCase}:latest"),
 
     // Sets a name with a tag that contains the project version
     ImageName(
-      repository = name.value.toLowerCase(),
+      repository = s"${organization.value}/${name.value.toLowerCase}",
       tag = Some("v" + version.value)
     )
   )

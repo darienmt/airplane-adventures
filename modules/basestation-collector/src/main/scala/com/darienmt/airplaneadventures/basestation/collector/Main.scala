@@ -33,7 +33,7 @@ object Main extends App {
     retryAutoResetPeriod = FiniteDuration(config.getDuration("retry.retryAutoResetPeriod").toMillis, MILLISECONDS),
     randomIntervalFactor = config.getDouble("retry.randomIntervalFactor")
   )
-  println(retryConfig)
+
   val collectorManager = system.actorOf(
     CollectorManager.props(
       Collector.props,
