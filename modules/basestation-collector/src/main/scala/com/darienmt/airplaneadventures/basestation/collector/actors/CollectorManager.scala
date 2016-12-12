@@ -55,7 +55,7 @@ class CollectorManager(
       )
         .withAutoReset(retryConfig.retryAutoResetPeriod)
     )
-    val supervisor = context.actorOf(supervisorProps, "supervisor")
+    val supervisor = context.actorOf(supervisorProps)
     context.become(waitingForCollectionToFinish(generator, supervisor) orElse unknowMessage, true)
   }
 

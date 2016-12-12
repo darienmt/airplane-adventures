@@ -76,7 +76,7 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
 lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
   .settings(commonSettings:_*)
   .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib
-  )0
+  )
 
 // Docker
 addCommandAlias("dockerize", ";clean;compile;test;basestationCollector/docker")
