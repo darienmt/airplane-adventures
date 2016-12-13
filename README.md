@@ -1,5 +1,7 @@
 # Airplane Adventures
 
+[![Build status](https://img.shields.io/travis/darienmt/airplane-adventures/master.svg)](https://travis-ci.org/darienmt/airplane-adventures)
+
 This project explores Dump1090/Flightaware feeder messengers.
 It consists on three modules:
 
