@@ -56,7 +56,7 @@ lazy val commonSettings = buildSettings ++ commonLibraries ++
   (scalastyleFailOnError := true)
 
 lazy val root = project.in(file("."))
-  .aggregate(basestationData, basestationCollector, basestationRepeater)
+  .aggregate(basestationData, basestationCollector, basestationRepeater, basestationRawCollector)
 
 lazy val basestationData = project.in(file("modules/basestation-data"))
   .settings(commonSettings:_*)
@@ -75,11 +75,18 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
 
 lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
   .settings(commonSettings:_*)
-  .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib
-  )
+  .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib)
+  .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
+  .settings(dockerSettings)
+
+lazy val basestationRawCollector = project.in(file("modules/basestation-raw-collector"))
+  .settings(commonSettings:_*)
+  .settings(libraryDependencies ++= akkaLib ++ testLib ++ akkaStreamKafkaLib ++ loggingLib)
+  .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
+  .settings(dockerSettings)
 
 // Docker
-addCommandAlias("dockerize", ";clean;compile;test;basestationCollector/docker")
+addCommandAlias("dockerize", ";clean;compile;test;basestationCollector/docker;basestationRepeater/docker;basestationRawCollector/docker")
 
 lazy val dockerSettings = Seq(
   dockerfile in docker := {

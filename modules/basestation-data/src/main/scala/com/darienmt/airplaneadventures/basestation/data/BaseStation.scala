@@ -13,7 +13,13 @@ object BaseStation {
 
   case class ErrorMessage(original: String, error: String) extends Message
 
-  sealed trait SuccessMessage extends Message
+  sealed trait SuccessMessage extends Message {
+    val sessionId: String
+    val dateMessageGenerated: LocalDate
+    val timeMessageGenerated: LocalTime
+    val dateMessageLogged: LocalDate
+    val timeMessageLogged: LocalTime
+  }
   /**
    * SELECTION CHANGE MESSAGE :  Generated when the user changes the selected aircraft in BaseStation. (SEL)
    */

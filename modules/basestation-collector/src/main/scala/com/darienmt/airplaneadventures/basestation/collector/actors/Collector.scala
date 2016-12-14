@@ -2,11 +2,10 @@ package com.darienmt.airplaneadventures.basestation.collector.actors
 
 import akka.Done
 import akka.actor.Status.Failure
-import akka.actor.{ Actor, ActorLogging, ActorRef, Cancellable, Props }
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{ Generator, StreamFinished, UnknownMessage }
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{Generator, StreamFinished, UnknownMessage}
 
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
 
 object Collector {
   type Generator = () => Future[Done]

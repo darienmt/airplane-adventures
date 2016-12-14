@@ -1,10 +1,10 @@
 package com.darienmt.airplaneadventures.basestation.collector.actors
 
 import akka.Done
-import akka.actor.{ Actor, ActorContext, ActorLogging, ActorRef, Props, SupervisorStrategy, Terminated }
-import akka.pattern.{ Backoff, BackoffSupervisor }
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.pattern.{Backoff, BackoffSupervisor}
 import com.darienmt.airplaneadventures.basestation.collector.actors.CollectorManager._
-import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{ SinkConfig, SourceConfig }
+import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{SinkConfig, SourceConfig}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
