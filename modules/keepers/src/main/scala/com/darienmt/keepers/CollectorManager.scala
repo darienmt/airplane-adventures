@@ -1,47 +1,37 @@
-package com.darienmt.airplaneadventures.basestation.collector.actors
+package com.darienmt.keepers
 
 import akka.Done
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.pattern.{Backoff, BackoffSupervisor}
-import com.darienmt.airplaneadventures.basestation.collector.actors.CollectorManager._
-import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{SinkConfig, SourceConfig}
+import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.pattern.{ Backoff, BackoffSupervisor }
+import com.darienmt.keepers.CollectorManager.{ CollectorProps, StartCollecting, UnknownMessage }
 
 import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
 object CollectorManager {
 
-  type CollectorProps = (ActorRef, Collector.Generator) => Props
-  type StreamGenerator = (SourceConfig, SinkConfig) => Future[Done]
+  type CollectorProps = (ActorRef, Generator) => Props
 
   sealed trait CollectorManagerMessages
-
-  case class RetryConfig(
-    maxRetryPeriod: FiniteDuration,
-    retryInterval: FiniteDuration,
-    retryAutoResetPeriod: FiniteDuration,
-    randomIntervalFactor: Double
-  )
-  case class StartCollecting(source: SourceConfig, sink: SinkConfig) extends CollectorManagerMessages
+  case object StartCollecting extends CollectorManagerMessages
   case class UnknownMessage(msg: Any) extends CollectorManagerMessages
 
   def props(
     collectorProps: CollectorProps,
-    streamGenerator: StreamGenerator,
+    generator: Generator,
     retryConfig: RetryConfig
-  ): Props = Props(new CollectorManager(collectorProps, streamGenerator, retryConfig))
+  ): Props = Props(new CollectorManager(collectorProps, generator, retryConfig))
 
 }
 
 class CollectorManager(
     collectorProps: CollectorProps,
-    streamGenerator: StreamGenerator,
+    generator: Generator,
     retryConfig: RetryConfig
 ) extends Actor with ActorLogging {
 
   override def receive: Receive = readyForCollection orElse unknowMessage
 
   def readyForCollection: Receive = {
-    case StartCollecting(source, sink) => startOver(() => streamGenerator(source, sink))
+    case StartCollecting => startOver(generator)
   }
 
   def startOver(generator: () => Future[Done]): Unit = {
@@ -69,7 +59,6 @@ class CollectorManager(
       context.stop(supervisor)
       startOver(generator)
     }
-    case Collector.UnknownMessage(msg) => log.error("Unknown message received by collector => " + msg.toString)
   }
 
 }

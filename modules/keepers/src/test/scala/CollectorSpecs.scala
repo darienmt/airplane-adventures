@@ -2,12 +2,10 @@ import akka.Done
 import akka.actor.Status.Failure
 import akka.actor.{ Actor, ActorRef, ActorSystem, Props, SupervisorStrategy, Terminated }
 import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKit }
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{ StreamFinished, UnknownMessage }
+import com.darienmt.keepers.{ Collector, Generator }
 import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpecLike }
 import TestUtils._
-
-import scala.concurrent.Future
+import com.darienmt.keepers.Collector.StreamFinished
 
 class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
     with DefaultTimeout with ImplicitSender
@@ -20,7 +18,7 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
   }
 
   def getActor(
-    generator: Collector.Generator = generatorWithDelay()
+    generator: Generator = generatorWithDelay()
   ): ActorRef = {
     val supervisor = system.actorOf(Props(new Actor {
       override def supervisorStrategy: SupervisorStrategy = SupervisorStrategy.stoppingStrategy
@@ -39,7 +37,8 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
     "respond to an unknown message by sending it to his manager" in {
       val actor = getActor()
       actor ! "Test"
-      expectMsgType[UnknownMessage]
+      watch(actor)
+      expectMsgType[Terminated]
     }
 
     "stop when it receives a Failure" in {
@@ -61,7 +60,7 @@ class CollectorSpecs extends TestKit(ActorSystem("CollectorSpecs"))
     }
 
     "stop, when the generator sends Failure" in {
-      val failingGenerator: Collector.Generator = () => {
+      val failingGenerator: Generator = () => {
         Thread.sleep(500)
         throw new Exception()
       }

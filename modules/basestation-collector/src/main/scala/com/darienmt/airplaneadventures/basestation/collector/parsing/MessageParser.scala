@@ -1,5 +1,7 @@
 package com.darienmt.airplaneadventures.basestation.collector.parsing
 
+import java.time.ZonedDateTime
+
 import FromCSVtoCaseClass.rowParserFor
 import com.darienmt.airplaneadventures.basestation.data.BaseStation._
 
@@ -8,7 +10,7 @@ import scala.util.{ Failure, Success, Try }
 object MessageParser {
   def apply(l: String): Message = parse(l.split(",").toList) match {
     case Success(m) => m
-    case Failure(ex) => ErrorMessage(l, ex.toString)
+    case Failure(ex) => ErrorMessage(l, ex.toString, ZonedDateTime.now())
   }
 
   protected val parse: List[String] => Try[Message] = {

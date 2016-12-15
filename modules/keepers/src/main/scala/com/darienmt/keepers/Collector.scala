@@ -1,18 +1,13 @@
-package com.darienmt.airplaneadventures.basestation.collector.actors
+package com.darienmt.keepers
 
 import akka.Done
 import akka.actor.Status.Failure
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.darienmt.airplaneadventures.basestation.collector.actors.Collector.{Generator, StreamFinished, UnknownMessage}
-
-import scala.concurrent.Future
+import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import com.darienmt.keepers.Collector.{ StreamFinished }
 
 object Collector {
-  type Generator = () => Future[Done]
-
   sealed trait CollectorMessage
   case object StreamFinished extends CollectorMessage
-  case class UnknownMessage(msg: Any) extends CollectorMessage
 
   def props(
     manager: ActorRef,
@@ -36,7 +31,7 @@ class Collector(
     case Done => {
       manager ! StreamFinished
     }
-    case msg => manager ! UnknownMessage(msg)
+    case msg => throw new Exception("Unknown message: " + msg.toString)
   }
 
   override def preStart(): Unit = collectorGenerator() pipeTo self

@@ -1,6 +1,6 @@
 package com.darienmt.airplaneadventures.basestation.data
 
-import java.time.{ LocalDate, LocalTime }
+import java.time.{ LocalDate, LocalTime, ZonedDateTime }
 
 /**
  *  More information regarding BaseStation format could be found at:
@@ -11,7 +11,7 @@ object BaseStation {
 
   sealed trait Message
 
-  case class ErrorMessage(original: String, error: String) extends Message
+  case class ErrorMessage(original: String, error: String, when: ZonedDateTime) extends Message
 
   sealed trait SuccessMessage extends Message {
     val sessionId: String

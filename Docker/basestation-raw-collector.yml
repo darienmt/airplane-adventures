@@ -1,0 +1,39 @@
+version: '2'
+services:
+  collector:
+    image: darienmt/basestationrawcollector:latest
+    environment:
+      KAFKA_ADDRESS: kafka
+      STATION_ADDRESS: ${STATION_ADDRESS}
+    depends_on:
+      - kafka
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - zk_data:/opt/zookeeper-3.4.6/data
+      - zk_conf:/opt/zookeeper-3.4.6/conf
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP}
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_CREATE_TOPICS: "raw-base-station-messages:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LOG_DIRS: /kafka/logs
+      KAFKA_LOG_RETENTION_HOURS: 1440
+    volumes:
+      - kafka:/kafka
+    depends_on:
+      - zookeeper
+
+volumes:
+  kafka:
+    driver: local
+  zk_data:
+    driver: local
+  zk_conf:
+    driver: local

@@ -1,12 +1,10 @@
 
-import TestUtils._
 import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
 import akka.testkit.{ DefaultTimeout, ImplicitSender, TestKitBase }
-import com.darienmt.airplaneadventures.basestation.collector.actors.CollectorManager.{ RetryConfig, StartCollecting, UnknownMessage }
-import com.darienmt.airplaneadventures.basestation.collector.actors.{ Collector, CollectorManager }
-import com.darienmt.airplaneadventures.basestation.collector.streams.BaseStation2Kafka.{ SinkConfig, SourceConfig }
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{ BeforeAndAfterAll, FlatSpec, Matchers, WordSpec }
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
+import TestUtils._
+import com.darienmt.keepers.CollectorManager.{ StartCollecting, UnknownMessage }
+import com.darienmt.keepers.{ CollectorManager, Generator, RetryConfig }
 
 import scala.concurrent.duration._
 
@@ -30,19 +28,13 @@ class CollectorManagerSpecs extends WordSpec
 
   def defaultRetry(): RetryConfig = RetryConfig(1 second, 100 millisecond, 50 millisecond, 0)
 
-  def startCollecting(): StartCollecting = StartCollecting(
-    SourceConfig("address", 10),
-    SinkConfig("addess", 10, "topic")
-  )
-
   def getActor(
     collectorProps: Props = doingNothingActorProps(),
-    generator: Collector.Generator = generatorWithDelay(),
+    generator: Generator = generatorWithDelay(),
     retryConfig: RetryConfig = defaultRetry()
   ): ActorRef = {
     val collectorPropsGenerator: CollectorManager.CollectorProps = (_, _) => collectorProps
-    val streamGenerator: CollectorManager.StreamGenerator = (_, _) => generator()
-    val props = CollectorManager.props(collectorPropsGenerator, streamGenerator, retryConfig)
+    val props = CollectorManager.props(collectorPropsGenerator, generator, retryConfig)
     system.actorOf(props)
   }
 
@@ -75,7 +67,7 @@ class CollectorManagerSpecs extends WordSpec
         generator = generatorWithDelay(1000),
         retryConfig = RetryConfig(100 millisecond, 10 millisecond, 50 millisecond, 0)
       )
-      actor ! startCollecting()
+      actor ! StartCollecting
 
       val msgs = receiveWhile[Int](300 millisecond) {
         case _ => 1

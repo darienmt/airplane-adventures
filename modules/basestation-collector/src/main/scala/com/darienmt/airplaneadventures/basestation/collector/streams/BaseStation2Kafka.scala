@@ -13,7 +13,7 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
-import io.circe.java8.time.encodeLocalDateDefault
+import io.circe.java8.time.{ encodeLocalDateDefault, encodeZonedDateTimeDefault }
 import com.darienmt.airplaneadventures.basestation.collector.parsing.CirceEncoders._
 
 object BaseStation2Kafka {

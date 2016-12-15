@@ -56,10 +56,15 @@ lazy val commonSettings = buildSettings ++ commonLibraries ++
   (scalastyleFailOnError := true)
 
 lazy val root = project.in(file("."))
-  .aggregate(basestationData, basestationCollector, basestationRepeater, basestationRawCollector)
+  .aggregate(basestationData, keepers, basestationCollector, basestationRepeater, basestationRawCollector)
 
 lazy val basestationData = project.in(file("modules/basestation-data"))
   .settings(commonSettings:_*)
+
+lazy val keepers = project.in(file("modules/keepers"))
+  .settings(commonSettings:_*)
+  .settings(libraryDependencies ++= akkaLib ++ testLib ++ akkaStreamKafkaLib ++ loggingLib)
+
 
 lazy val basestationCollector = project.in(file("modules/basestation-collector"))
   .settings(commonSettings:_*)
@@ -67,8 +72,8 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
                                     circeLib ++ testLib ++ akkaStreamKafkaLib ++
                                     loggingLib
   )
-  .aggregate(basestationData)
-  .dependsOn(basestationData)
+  .aggregate(basestationData, keepers)
+  .dependsOn(basestationData, keepers)
   .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
   .settings(dockerSettings)
 
@@ -82,6 +87,8 @@ lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
 lazy val basestationRawCollector = project.in(file("modules/basestation-raw-collector"))
   .settings(commonSettings:_*)
   .settings(libraryDependencies ++= akkaLib ++ testLib ++ akkaStreamKafkaLib ++ loggingLib)
+  .aggregate(keepers)
+  .dependsOn(keepers)
   .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
   .settings(dockerSettings)
 
