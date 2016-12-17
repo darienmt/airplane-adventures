@@ -1,15 +1,9 @@
 package com.darienmt.airplaneadventures.basestation.repeater
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Tcp
-import com.typesafe.config.ConfigFactory
+import com.darienmt.keepers.MainCommons
 
-object Main extends App {
-  implicit val system = ActorSystem("collector")
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  val config = ConfigFactory.load()
+object Main extends App with MainCommons {
 
   val bsAddress = config.getString("station.address")
   val bsPort = config.getInt("station.port")
