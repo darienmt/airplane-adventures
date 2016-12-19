@@ -5,8 +5,11 @@ services:
     environment:
       KAFKA_ADDRESS: kafka
       STATION_ADDRESS: ${STATION_ADDRESS}
+      STATSD_HOST: grafana
+      STATSD_PORT: 8125
     depends_on:
       - kafka
+      - grafana
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
@@ -30,6 +33,13 @@ services:
     depends_on:
       - zookeeper
 
+  grafana:
+    image: kamon/grafana_graphite:2.1
+    ports:
+      - "8088:80"
+      - "8089:81"
+      - "8225:8125/udp"
+      - "8225:8126"
 volumes:
   kafka:
     driver: local

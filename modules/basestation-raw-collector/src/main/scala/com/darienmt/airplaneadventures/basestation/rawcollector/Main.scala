@@ -43,5 +43,5 @@ object Main extends App with MainCommons {
     .runForeach(println)
 
   val keeper = KeepThisUp(config)
-  keeper(justGettingData)
+  keeper(generator)
 }

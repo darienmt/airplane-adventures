@@ -58,8 +58,9 @@ lazy val kamonLibs = Seq(
   "io.kamon" %% "kamon-system-metrics"
 ).map(_ % "0.6.3")
 
+lazy val aspectJWeaverVersions = "1.8.9"
 lazy val aspectJWeaverLib = Seq(
-  "org.aspectj" % "aspectjweaver" % "1.8.9"
+  "org.aspectj" % "aspectjweaver" % aspectJWeaverVersions
 )
 
 lazy val commonLibraries = Seq(
@@ -93,16 +94,24 @@ lazy val basestationCollector = project.in(file("modules/basestation-collector")
   .aggregate(basestationData, keepers)
   .dependsOn(basestationData, keepers)
   .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
-  .settings(dockerSettings)
+  .settings(dockerSettings ++ aspectjSettings)
+  .settings(
+    mainClass in Compile := Some("com.darienmt.airplaneadventures.basestation.collector.Main"),
+    javaOptions in run <++= AspectjKeys.weaverOptions in Aspectj
+  )
 
 
 lazy val basestationRepeater = project.in(file("modules/basestation-repeater"))
   .settings(commonSettings:_*)
-  .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib)
+  .settings(libraryDependencies ++= akkaLib ++ testLib ++ loggingLib ++ aspectJWeaverLib)
   .enablePlugins(sbtdocker.DockerPlugin, JavaServerAppPackaging)
   .aggregate(keepers)
   .dependsOn(keepers)
-  .settings(dockerSettings)
+  .settings(dockerSettings ++ aspectjSettings)
+  .settings(
+    mainClass in Compile := Some("com.darienmt.airplaneadventures.basestation.repeater.Main"),
+    javaOptions in run <++= AspectjKeys.weaverOptions in Aspectj
+  )
 
 lazy val basestationRawCollector = project.in(file("modules/basestation-raw-collector"))
   .settings(commonSettings:_*)
@@ -118,7 +127,6 @@ lazy val basestationRawCollector = project.in(file("modules/basestation-raw-coll
 
 
 
-
 // Docker
 addCommandAlias("dockerize", ";clean;compile;test;basestationCollector/docker;basestationRepeater/docker;basestationRawCollector/docker")
 
@@ -128,12 +136,7 @@ lazy val dockerSettings = Seq(
     val targetDir = "/app"
     new Dockerfile {
       from("anapsix/alpine-java:8")
-      env("JAVA_OPTS", "-javaagent:/opt/docker/lib/org.aspectj." + javaOptions
-        .value.seq
-        .filter(_.startsWith("-javaagent"))
-        .head
-        .split("/")
-        .last)
+      env("JAVA_OPTS", "-javaagent:/app/lib/org.aspectj.aspectjweaver-" + aspectJWeaverVersions + ".jar" )
       entryPoint(s"$targetDir/bin/${executableScriptName.value}")
       copy(appDir, targetDir)
     }
