@@ -21,7 +21,7 @@ lazy val compilerOptions = Seq(
 )
 
 // Libraries
-lazy val akkaVersion = "2.4.12"
+lazy val akkaVersion = "2.4.16"
 
 lazy val akkaLib = Seq(
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,

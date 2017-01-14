@@ -1,0 +1,48 @@
+{
+  "order": 0,
+  "version": 1,
+  "template": "metrics-*",
+  "settings": {
+    "index": {
+      "refresh_interval": "5s"
+    }
+  },
+  "mappings": {
+    "metric": {
+      "_source": {
+        "enabled": true
+      },
+      "properties": {
+        "appName": { "type": "text" },
+        "hostName": { "type": "text" },
+        "from": { "type": "date" },
+        "to": { "type": "date" },
+        "entity": { "type": "text" },
+        "tags": {
+          "properties": {
+            "name": { "type": "text" },
+            "value": { "type": "text" }
+          }
+        },
+        "category": { "type": "keyword" },
+        "akkaData": {
+          "properties": {
+            "actorSystem": { "type": "keyword" },
+            "topParent": { "type": "keyword" },
+            "path": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "keyName": { "type": "keyword" },
+        "unitLabel": { "type": "keyword" },
+        "value": { "type": "long" }
+      }
+    }
+  }
+}

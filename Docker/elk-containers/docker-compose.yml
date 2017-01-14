@@ -1,0 +1,53 @@
+version: '2'
+services:
+
+  elasticsearch-seed:
+    build: ./Elasticsearch
+    image: elasticsearch-airadventures
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+  elasticsearch-node:
+    image: elasticsearch-airadventures
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    volumes:
+      - es-data-node:/usr/share/elasticsearch/data
+    depends_on:
+      - elasticsearch-seed
+
+  kibana:
+    image: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch-seed:9200
+    depends_on:
+      - elasticsearch-seed
+
+
+  logstash-log:
+      build: ./Logstash-Log
+      image: logstash-log
+      ports:
+        - "4560:4560"
+      depends_on:
+        - elasticsearch-seed
+
+  logstash-metric:
+      build: ./Logstash-Metric
+      image: logstash-metric
+      ports:
+        - "4570:4560"
+      depends_on:
+        - elasticsearch-seed
+
+volumes:
+  es-data:
+    driver: local
+  es-data-node:
+    driver: local

@@ -25,7 +25,7 @@ class Collector(
 
   override def receive: Receive = {
     case Failure(ex) => {
-      log.error(ex, "Stream stopped")
+      log.error("Stream stopped with an error")
       throw ex
     }
     case Done => {
